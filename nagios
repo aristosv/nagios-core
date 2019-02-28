@@ -36,7 +36,7 @@ make install > /dev/null 2>&1
 echo installing service
 make install-daemoninit > /dev/null 2>&1
 
-echo i nstalling command mode
+echo installing command mode
 make install-commandmode > /dev/null 2>&1
 
 echo installing configuration files
@@ -71,7 +71,7 @@ cd /tmp/nagios-plugins-release-2.2.1/
 make > /dev/null 2>&1
 make install > /dev/null 2>&1
 
-echo ===========================================================================================
+echo ===============================================================================
 echo nagios installation has been completed
 echo access it using and ip of this machine, username [$nagios_user] and password [$nagios_pass]
-echo ===========================================================================================
+echo ===============================================================================
