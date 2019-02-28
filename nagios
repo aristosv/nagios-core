@@ -4,8 +4,7 @@ echo you will be asked a few questions to automate the installation
 echo ==============================================================
 read -p "press enter to continue"
 
-echo set a username for nagios web interface: ; read nagios_user
-echo set a password for nagios web interface: ; read nagios_pass
+echo set a password for nagiosadmin: ; read nagiosadmin_pass
 
 echo updating
 apt-get update > /dev/null 2>&1
@@ -48,7 +47,7 @@ a2enmod rewrite > /dev/null 2>&1
 a2enmod cgi > /dev/null 2>&1
 
 echo creating nagiosadmin user account
-htpasswd -b -c /usr/local/nagios/etc/htpasswd.users $nagios_user $nagios_pass > /dev/null 2>&1
+htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin $nagiosadmin_pass > /dev/null 2>&1
 
 echo restarting apache
 systemctl restart apache2.service
@@ -77,8 +76,8 @@ systemctl restart apache2.service
 echo restarting nagios
 systemctl restart nagios.service
 
-echo ===============================================================================
+echo ===========================================
 echo nagios installation has been completed
 echo access it using http://$(ip route get 1 | awk '{print $NF;exit}')/nagios
-echo username [$nagios_user] password [$nagios_pass]
-echo ===============================================================================
+echo username [nagiosadmin] password [$nagiosadmin_pass]
+echo ===========================================
