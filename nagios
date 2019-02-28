@@ -71,6 +71,12 @@ cd /tmp/nagios-plugins-release-2.2.1/
 make > /dev/null 2>&1
 make install > /dev/null 2>&1
 
+echo restarting apache
+systemctl restart apache2.service
+
+echo restarting nagios
+systemctl restart nagios.service
+
 echo ===============================================================================
 echo nagios installation has been completed
 echo access it using and ip of this machine, username [$nagios_user] and password [$nagios_pass]
