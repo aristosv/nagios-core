@@ -1,0 +1,72 @@
+echo ==============================================================
+echo this will install nagios and all its prerequisites
+echo you will be asked a few questions to automate the installation
+echo ==============================================================
+read -p "press enter to continue"
+
+echo set a username for nagios web interface: ; read nagios_user
+echo set a password for nagios web interface: ; read nagios_pass
+
+echo updating
+apt-get update > /dev/null 2>&1
+
+echo upgrading
+apt-get -y upgrade > /dev/null 2>&1
+
+echo installing prerequisites
+apt-get install -y autoconf gcc libc6 make wget unzip apache2 apache2-utils php libgd-dev > /dev/null 2>&1
+
+echo downloading nagios
+cd /tmp
+wget --no-check-certificate -O nagioscore.tar.gz https://github.com/NagiosEnterprises/nagioscore/archive/nagios-4.4.3.tar.gz > /dev/null 2>&1
+tar xzf nagioscore.tar.gz
+
+echo compiling nagios
+cd /tmp/nagioscore-nagios-4.4.3/
+./configure --with-httpd-conf=/etc/apache2/sites-enabled > /dev/null 2>&1
+make all > /dev/null 2>&1
+
+echo creating user and group
+make install-groups-users > /dev/null 2>&1
+usermod -a -G nagios www-data
+
+echo installing binaries
+make install > /dev/null 2>&1
+
+echo installing service
+make install-daemoninit > /dev/null 2>&1
+
+echo i nstalling command mode
+make install-commandmode > /dev/null 2>&1
+
+echo installing configuration files
+make install-config > /dev/null 2>&1
+
+echo installing apache configuration files
+make install-webconf > /dev/null 2>&1
+a2enmod rewrite > /dev/null 2>&1
+a2enmod cgi > /dev/null 2>&1
+
+echo creating nagiosadmin user account
+htpasswd -b -c /usr/local/nagios/etc/htpasswd.users $nagios_user $nagios_pass > /dev/null 2>&1
+
+echo restarting apache
+systemctl restart apache2.service
+
+echo starting nagios
+systemctl start nagios.service
+
+echo installing nagios plugins prerequisites
+apt-get install -y autoconf gcc libc6 libmcrypt-dev make libssl-dev wget bc gawk dc build-essential snmp libnet-snmp-perl gettext > /dev/null 2>&1
+
+echo downloading nagios plugins
+cd /tmp
+wget --no-check-certificate -O nagios-plugins.tar.gz https://github.com/nagios-plugins/nagios-plugins/archive/release-2.2.1.tar.gz > /dev/null 2>&1
+tar zxf nagios-plugins.tar.gz
+
+echo installing nagios plugins
+cd /tmp/nagios-plugins-release-2.2.1/
+./tools/setup > /dev/null 2>&1
+./configure > /dev/null 2>&1
+make > /dev/null 2>&1
+make install > /dev/null 2>&1
