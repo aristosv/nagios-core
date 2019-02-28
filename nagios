@@ -79,5 +79,5 @@ systemctl restart nagios.service
 
 echo ===============================================================================
 echo nagios installation has been completed
-echo access it using and ip of this machine, username [$nagios_user] and password [$nagios_pass]
+echo access it using the ip of this machine, username [$nagios_user] and password [$nagios_pass]
 echo ===============================================================================
