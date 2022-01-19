@@ -1,8 +1,7 @@
-# nagios-debian
-Nagios core monitoring engine and web interface
+# nagios-core
+Nagios core monitoring engine and web interface.
 
-Run the command below on a clean, minimal installation of Debian Stretch.
+Run the command below on a clean, minimal installation of Debian.
 ```
-bash <(wget --no-check-certificate -qO- https://raw.githubusercontent.com/aristosv/nagios-debian/master/nagios)
+bash <(wget --no-check-certificate -qO- https://raw.githubusercontent.com/aristosv/nagios-core/master/nagios-core)
 ```
-You will be asked to enter some information and the script will install Nagios and all its prerequisites.
