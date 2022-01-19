@@ -80,6 +80,6 @@ systemctl restart nagios.service
 
 echo ===========================================
 echo nagios installation has been completed
-echo access it using http://$(ip route get 1 | awk '{print $NF;exit}')/nagios
+echo access it using http://$(hostname -I | cut -d' ' -f1)/nagios
 echo username [nagiosadmin] password [$nagiosadmin_pass]
 echo ===========================================
