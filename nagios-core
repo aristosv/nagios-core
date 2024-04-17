@@ -1,86 +1,76 @@
 #!/bin/bash
 
-echo ==============================================================
-echo this will install nagios and all its prerequisites
-echo you will be asked a few questions to automate the installation
-echo ==============================================================
-read -p "press enter to continue"
+echo update
+apt-get update
+apt-get -y upgrade
 
-echo set a password for nagiosadmin: ; read nagiosadmin_pass
+echo install prerequisites
+apt-get install -y autoconf gcc libc6 make wget unzip apache2 apache2-utils php libgd-dev openssl libssl-dev
 
-echo updating
-apt-get update > /dev/null 2>&1
-
-echo upgrading
-apt-get -y upgrade > /dev/null 2>&1
-
-echo installing prerequisites
-apt-get install -y autoconf gcc libc6 make wget unzip apache2 apache2-utils php libgd-dev > /dev/null 2>&1
-
-echo downloading nagios
+echo download nagios
 cd /tmp
-wget --no-check-certificate -O nagioscore.tar.gz https://github.com/NagiosEnterprises/nagioscore/archive/nagios-4.4.6.tar.gz > /dev/null 2>&1
+wget --no-check-certificate -O nagioscore.tar.gz https://github.com/NagiosEnterprises/nagioscore/archive/refs/tags/nagios-4.5.1.tar.gz
 tar xzf nagioscore.tar.gz
 
-echo compiling nagios
-cd /tmp/nagioscore-nagios-4.4.6/
-./configure --with-httpd-conf=/etc/apache2/sites-enabled > /dev/null 2>&1
-make all > /dev/null 2>&1
+echo compile nagios
+cd /tmp/nagioscore-nagios-4.5.1/
+./configure --with-httpd-conf=/etc/apache2/sites-enabled
+make all
 
-echo creating user and group
-make install-groups-users > /dev/null 2>&1
+echo create user and group
+make install-groups-users
 usermod -a -G nagios www-data
 
-echo installing binaries
-make install > /dev/null 2>&1
+echo install binaries
+make install
 
-echo installing service
-make install-daemoninit > /dev/null 2>&1
+echo install service
+make install-daemoninit
 
-echo installing command mode
-make install-commandmode > /dev/null 2>&1
+echo install command mode
+make install-commandmode
 
-echo installing configuration files
-make install-config > /dev/null 2>&1
+echo install configuration files
+make install-config
 
-echo installing apache configuration files
-make install-webconf > /dev/null 2>&1
-a2enmod rewrite > /dev/null 2>&1
-a2enmod cgi > /dev/null 2>&1
+echo install apache configuration files
+make install-webconf
+a2enmod rewrite
+a2enmod cgi
 
-echo creating nagiosadmin user account
-htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin $nagiosadmin_pass > /dev/null 2>&1
+echo create nagiosadmin user account
+htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin nagios
 
-echo restarting apache
+echo restart apache
 systemctl restart apache2.service
 
-echo starting nagios
+echo start nagios
 systemctl start nagios.service
 
-echo installing nagios plugins prerequisites
-apt-get install -y autoconf gcc libc6 libmcrypt-dev make libssl-dev wget bc gawk dc build-essential snmp libnet-snmp-perl gettext > /dev/null 2>&1
+echo install nagios plugins prerequisites
+apt-get install -y autoconf gcc libc6 libmcrypt-dev make libssl-dev wget bc gawk dc build-essential snmp libnet-snmp-perl gettext
 
-echo downloading nagios plugins
+echo download nagios plugins
 cd /tmp
-wget --no-check-certificate -O nagios-plugins.tar.gz https://github.com/nagios-plugins/nagios-plugins/archive/release-2.3.3.tar.gz > /dev/null 2>&1
+wget --no-check-certificate -O nagios-plugins.tar.gz https://codeload.github.com/nagios-plugins/nagios-plugins/tar.gz/refs/tags/release-2.4.9
 tar zxf nagios-plugins.tar.gz
 
-echo installing nagios plugins
-cd /tmp/nagios-plugins-release-2.3.3/
-./tools/setup > /dev/null 2>&1
-./configure > /dev/null 2>&1
-make > /dev/null 2>&1
-make install > /dev/null 2>&1
+echo install nagios plugins
+cd /tmp/nagios-plugins-release-2.4.9/
+./tools/setup
+./configure
+make
+make install
 
-echo restarting apache
+echo restart apache
 systemctl restart apache2.service
 
-echo restarting nagios
+echo restart nagios
 systemctl restart nagios.service
 
 echo ===========================================
 echo nagios installation has been completed
 echo access it using http://$(hostname -I | cut -d' ' -f1)/nagios
 echo username: nagiosadmin
-echo password: $nagiosadmin_pass
+echo password: nagios
 echo ===========================================
